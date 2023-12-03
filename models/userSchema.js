@@ -17,13 +17,13 @@ const userSchema = new mongoose.Schema(
     image: String,
 
     // relation
-    conversations: [
+    conversationIds: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Conversation",
       },
     ],
-    seenMessages: [
+    seenMessageIds: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Message",

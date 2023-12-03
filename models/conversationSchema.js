@@ -3,19 +3,19 @@ import Message from "./messageSchema";
 
 const conversationSchema = new mongoose.Schema(
   {
+    name: String,
     lastMessageAt: {
       type: Date,
       default: Date.now,
     },
-    name: String,
     isGroup: Boolean,
-    messages: [
+    messagesIds: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Message",
       },
     ],
-    users: [
+    userIds: [
       {
         type: mongoose.Types.Schema.ObjectId,
         ref: "User",
@@ -28,7 +28,7 @@ const conversationSchema = new mongoose.Schema(
 // Delete Message when conversation is removed
 // reference ---- "https://mongoosejs.com/docs/middleware.html#pre"
 conversationSchema.pre("remove", async function (next) {
-  await Message.deleteMany({ conversation: this._id });
+  await Message.deleteMany({ conversationId: this._id });
 
   next();
 });

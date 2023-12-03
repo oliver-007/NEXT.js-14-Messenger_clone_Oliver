@@ -10,7 +10,10 @@ const messageSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    conversation: { type: mongoose.Schema.Types.ObjectId, ref: "Conversation" },
+    conversationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Conversation",
+    },
     sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }

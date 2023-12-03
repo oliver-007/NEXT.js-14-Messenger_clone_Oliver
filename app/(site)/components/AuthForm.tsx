@@ -6,12 +6,18 @@ import { useState, useCallback } from "react";
 import { useForm, FieldValues, SubmitHandler } from "react-hook-form";
 import AuthSocialButton from "./AuthSocialButton";
 import { BsGithub, BsGoogle } from "react-icons/bs";
+import axios from "axios";
+import { signIn } from "next-auth/react";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const AuthForm = () => {
   type Variant = "LOGIN" | "REGISTER";
 
   const [variant, setVariant] = useState<Variant>("LOGIN");
   const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
 
   const toggleVariant = useCallback(() => {
     if (variant === "LOGIN") {
@@ -34,10 +40,28 @@ const AuthForm = () => {
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
 
+    // Register User
     if (variant === "REGISTER") {
-      // Axios Register
+      axios
+        .post("/api/register", data)
+        // .then(() => signIn("credentials", { ...data, redirect: false }))
+        // .then((res) => {
+        //   if (res?.error) {
+        //     toast.error("Invalid Credentials !");
+        //   }
+        //   if (res?.ok) {
+        //     router.push("/conversations");
+        //     toast.success("Login success");
+        //   }
+        // })
+        .catch(
+          (res) => console.log("something went wrong----", res?.message)
+          // toast.error("Something went wrong !", res.message)
+        )
+        .finally(() => setIsLoading(false));
     }
 
+    // Login User
     if (variant === "LOGIN") {
       // NextAuth SignIn
     }
