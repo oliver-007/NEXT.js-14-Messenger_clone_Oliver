@@ -1,23 +1,23 @@
 import bcrypt from "bcrypt";
-import dbConnect from "@/app/libs/db";
-import User from "@/models/userSchema";
 import { NextResponse } from "next/server";
+import prismadb from "@/app/libs/prismadb";
 
 // *********   Create / Register user   ********
 export async function POST(request: Request) {
   try {
     const { name, email, password } = await request.json();
 
-    await dbConnect();
-
-    if (!name || !email || !password) {
-      return NextResponse.json(
-        { message: "All fields required !" },
-        { status: 400 }
-      );
+    if (!email || !name || !password) {
+      return new NextResponse("All Fields Required !", { status: 400 });
     }
+
     // check duplicate user
-    const userExist = await User.findOne({ email }).lean().exec();
+    const userExist = await prismadb.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
     if (userExist) {
       return NextResponse.json(
         { message: "Email Already used !" },
@@ -29,10 +29,12 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // create user
-    const user = await User.create({
-      name,
-      email,
-      hashedPassword,
+    const user = await prismadb.user.create({
+      data: {
+        name,
+        email,
+        hashedPassword,
+      },
     });
 
     // if (user) {
@@ -42,13 +44,8 @@ export async function POST(request: Request) {
     //   );
     // }
     return NextResponse.json(user);
-  } catch (error) {
-    console.log("Registr api error ------", error);
-    return NextResponse.json(
-      {
-        message: "Failed to create user",
-      },
-      { status: 400 }
-    );
+  } catch (error: any) {
+    console.log("Register api error ------", error);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }

@@ -3,10 +3,11 @@ import bcrypt from "bcrypt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import dbConnect from "@/app/libs/db";
-import User from "@/models/userSchema";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import prismadb from "@/app/libs/prismadb";
 
 export const authOptions: AuthOptions = {
+  adapter: PrismaAdapter(prismadb),
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID as string,
@@ -28,9 +29,12 @@ export const authOptions: AuthOptions = {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Invalid Credentials");
         }
-        await dbConnect();
 
-        const user = await User.findOne({ email: credentials.email });
+        const user = await prismadb.user.findUnique({
+          where: {
+            email: credentials.email,
+          },
+        });
 
         if (!user || !user?.hashedPassword) {
           throw new Error("Invalid Credentials");

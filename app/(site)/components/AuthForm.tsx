@@ -54,21 +54,41 @@ const AuthForm = () => {
         //     toast.success("Login success");
         //   }
         // })
-        .catch(
-          (res) => console.log("something went wrong----", res?.message)
-          // toast.error("Something went wrong !", res.message)
-        )
+        .catch((res) => toast.error(res.message))
         .finally(() => setIsLoading(false));
     }
 
     // Login User
     if (variant === "LOGIN") {
       // NextAuth SignIn
+      signIn("credentials", { ...data, redirect: false })
+        .then((callback) => {
+          if (callback?.error) {
+            toast.error("Invalid Credentials !");
+          }
+          if (callback?.ok) {
+            toast.success("Logged in !");
+            // router.push("/conversations");
+          }
+        })
+        .finally(() => setIsLoading(false));
     }
   };
 
-  const socialAction = (action: String) => {
+  const socialAction = (action: string) => {
     // NextAuth Social Sign In
+    setIsLoading(true);
+    signIn(action, { redirect: false })
+      .then((res) => {
+        if (res?.error) {
+          toast.error("Invalid Credentials !");
+        }
+        if (res?.ok) {
+          toast.success("Logged In !");
+          // router.push("/conversations");
+        }
+      })
+      .finally(() => setIsLoading(false));
   };
 
   return (
@@ -175,5 +195,3 @@ const AuthForm = () => {
 };
 
 export default AuthForm;
-
-// 58:50
