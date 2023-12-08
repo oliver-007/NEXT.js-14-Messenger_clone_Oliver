@@ -2,22 +2,30 @@
 
 import Button from "@/app/components/Button";
 import Input from "@/app/components/inputs/Input";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useForm, FieldValues, SubmitHandler } from "react-hook-form";
 import AuthSocialButton from "./AuthSocialButton";
 import { BsGithub, BsGoogle } from "react-icons/bs";
 import axios from "axios";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
 const AuthForm = () => {
+  const session = useSession();
+  const router = useRouter();
+
   type Variant = "LOGIN" | "REGISTER";
 
   const [variant, setVariant] = useState<Variant>("LOGIN");
   const [isLoading, setIsLoading] = useState(false);
 
-  const router = useRouter();
+  useEffect(() => {
+    if (session?.status === "authenticated") {
+      router.push("/users");
+      // router.push("/conversations");
+    }
+  }, [router, session?.status]);
 
   const toggleVariant = useCallback(() => {
     if (variant === "LOGIN") {
@@ -44,16 +52,17 @@ const AuthForm = () => {
     if (variant === "REGISTER") {
       axios
         .post("/api/register", data)
-        // .then(() => signIn("credentials", { ...data, redirect: false }))
-        // .then((res) => {
-        //   if (res?.error) {
-        //     toast.error("Invalid Credentials !");
-        //   }
-        //   if (res?.ok) {
-        //     router.push("/conversations");
-        //     toast.success("Login success");
-        //   }
-        // })
+        .then(() => signIn("credentials", { ...data, redirect: false }))
+        .then((res) => {
+          if (res?.error) {
+            toast.error("Invalid Credentials !");
+          }
+          if (res?.ok) {
+            router.push("/users");
+            // router.push("/conversations");
+            toast.success("Login success");
+          }
+        })
         .catch((res) => toast.error(res.message))
         .finally(() => setIsLoading(false));
     }
@@ -68,6 +77,7 @@ const AuthForm = () => {
           }
           if (callback?.ok) {
             toast.success("Logged in !");
+            router.push("/users");
             // router.push("/conversations");
           }
         })
@@ -195,3 +205,4 @@ const AuthForm = () => {
 };
 
 export default AuthForm;
+// 01:57:43
