@@ -70,5 +70,3 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
 };
 
 export default DesktopSidebar;
-
-// 02:28:02
