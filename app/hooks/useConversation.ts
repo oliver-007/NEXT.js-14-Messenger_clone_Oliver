@@ -8,8 +8,8 @@ const useConversation = () => {
     if (!params?.conversationId) {
       return "";
     }
-    return params?.coversationId as string;
-  }, [params.conversationId]);
+    return params.conversationId as string;
+  }, [params?.conversationId]);
 
   const isOpen = useMemo(() => {
     return !!conversationId; // useing "!!" before any string, in return converts them into boolen
