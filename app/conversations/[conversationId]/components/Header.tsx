@@ -85,5 +85,3 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
 };
 
 export default Header;
-
-// 05:30:30
