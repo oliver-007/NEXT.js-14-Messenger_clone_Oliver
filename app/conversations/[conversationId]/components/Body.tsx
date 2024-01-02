@@ -35,5 +35,3 @@ const Body: React.FC<BodyProps> = ({ initialMessages = [] }) => {
 };
 
 export default Body;
-
-// 05:00:40
