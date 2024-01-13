@@ -3,12 +3,17 @@ import { User } from "@prisma/client";
 import Image from "next/image";
 import React from "react";
 import placeholder from "@/public/images/placeholder.png";
+import useActiveList from "../hooks/useActiveList";
 
 interface AvatarProps {
   user: User;
 }
 
 const Avatar: React.FC<AvatarProps> = ({ user }) => {
+  const { members } = useActiveList();
+  // for checking existance, indexOf() is more preferable than find()
+  const isActive = members.indexOf(user?.email!) !== -1;
+
   return (
     <div className="relative">
       <div
@@ -25,7 +30,7 @@ const Avatar: React.FC<AvatarProps> = ({ user }) => {
       >
         <Image fill src={user?.image || placeholder} alt="Avatar" />
       </div>
-      {/* {isActive ? (
+      {isActive ? (
         <span
           className="
             absolute 
@@ -42,7 +47,7 @@ const Avatar: React.FC<AvatarProps> = ({ user }) => {
             md:w-3
           "
         />
-      ) : null} */}
+      ) : null}
     </div>
   );
 };
